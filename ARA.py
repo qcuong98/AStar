@@ -103,9 +103,9 @@ def ARA():
         min_g_h = moveFromOpenToIncons()
         closed = set()
 
-        ans = e
         if (min_g_h != 0):
             e = min(e, g[(Gx, Gy)] / (1.0 * min_g_h))
+        ans = e
         e -= eps
 
         updateFValue(e)
