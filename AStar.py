@@ -1,13 +1,33 @@
 import math
 import heapq
+import sys
 
-f = open("input.txt", "r")
-
-n = int(f.readline())
-Sx, Sy = [int(x) for x in next(f).split()]
-Gx, Gy = [int(x) for x in next(f).split()]
-arr = [[int(x) for x in line.split()] for line in f]
+n = 0
+(Sx, Sy) = (0, 0)
+(Gx, Gy) = (0, 0)
+arr = []
 visited = set()
+
+def readArguments():
+    if (len(sys.argv) != 3):
+        print("python3 AStar.py <input_file_directory> <output_file_directory>")
+        exit()
+    return (sys.argv[1], sys.argv[2])
+
+def importFromFile(inputDir):
+    global n
+    global Sx
+    global Sy
+    global Gx
+    global Gy
+    global arr
+     
+    fInput = open(inputDir, "r")
+
+    n = int(fInput.readline())
+    Sx, Sy = [int(x) for x in next(fInput).split()]
+    Gx, Gy = [int(x) for x in next(fInput).split()]
+    arr = [[int(x) for x in line.split()] for line in fInput]
 
 def sqr(a):
     return a * a
@@ -52,7 +72,7 @@ def aStar(Sx, Sy, Gx, Gy):
                 (x, y) = tr[x][y]
             path.append((Sx, Sy))
             path.reverse()
-            return (ff, path)
+            return (ff + 1, path)
 
         if (x, y) not in visited:
             visited.add((x, y))
@@ -68,8 +88,8 @@ def aStar(Sx, Sy, Gx, Gy):
     
     return (-1, [])
 
-def exportToFile(res, outputFile):
-    fOutput = open(outputFile, "w")
+def exportToFile(res, outputDir):
+    fOutput = open(outputDir, "w")
     (len_path, path) = res
 
     if (len_path == -1):
@@ -99,7 +119,8 @@ def exportToFile(res, outputFile):
         fOutput.write("\n")
 
     fOutput.close()
-    
 
+(inputDir, outputDir) = readArguments()
+importFromFile(inputDir)
 res = aStar(Sx, Sy, Gx, Gy)
-exportToFile(res, "output.txt")
+exportToFile(res, outputDir)
