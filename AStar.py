@@ -68,4 +68,38 @@ def aStar(Sx, Sy, Gx, Gy):
     
     return (-1, [])
 
-print(aStar(Sx, Sy, Gx, Gy))
+def exportToFile(res, outputFile):
+    fOutput = open(outputFile, "w")
+    (len_path, path) = res
+
+    if (len_path == -1):
+        fOutput.write("-1")
+        return
+
+    ans = arr[:]
+    for i in range(n):
+        for j in range(n):
+            if (ans[i][j] == 0):
+                ans[i][j] = '-'
+            elif (ans[i][j] == 1):
+                ans[i][j] = 'o'
+    for (x, y) in path:
+        ans[x][y] = 'x'
+    ans[Sx][Sy] = 'S'
+    ans[Gx][Gy] = 'G'
+
+    fOutput.write(str(int(len_path)))
+    fOutput.write("\n")
+    for (x, y) in path:
+        fOutput.write("(" + str(x) + "," + str(y) + ") ")
+    fOutput.write("\n")
+    for i in range(n):
+        for j in range(n):
+            fOutput.write(ans[i][j] + " ")
+        fOutput.write("\n")
+
+    fOutput.close()
+    
+
+res = aStar(Sx, Sy, Gx, Gy)
+exportToFile(res, "output.txt")
