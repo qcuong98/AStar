@@ -1,16 +1,46 @@
 import math
 import heapq
+import sys
+import os
+import time
+from threading import Thread, Timer, Event
 
 fi = open("input.txt", "r")
 
-n = int(fi.readline())
-Sx, Sy = [int(x) for x in next(fi).split()]
-Gx, Gy = [int(x) for x in next(fi).split()]
-arr = [[int(x) for x in line.split()] for line in fi]
-
+n = 0
+ans = 0
+upper_bound = 0
+(Sx, Sy) = (0, 0)
+(Gx, Gy) = (0, 0)
+arr = []
 closed = set()
 open_queue = []
 incons = set()
+
+def readArguments():
+    if (len(sys.argv) != 3):
+        print("python3 ARA.py <input_file_directory> <output_file_directory>")
+        exit()
+    return (sys.argv[1], sys.argv[2])
+
+def importFromFile(inputDir):
+    global n
+    global Sx
+    global Sy
+    global Gx
+    global Gy
+    global arr
+    global upper_bound
+     
+    fInput = open(inputDir, "r")
+
+    n = int(fInput.readline())
+    Sx, Sy = [int(x) for x in next(fInput).split()]
+    Gx, Gy = [int(x) for x in next(fInput).split()]
+    for i in range(n):
+        x = list(next(fInput).split())
+        arr.append(x)
+    upper_bound = float(fInput.readline())
 
 g = {}
 tr = {}
@@ -88,14 +118,17 @@ def updateFValue(e):
 
 
 eps = 0.01
+
                 
 def ARA():
     global g
     global open_queue
     global closed
+    global ans
 
     g = {(Sx, Sy): 0, (Gx, Gy): float("inf")}
     e = 100
+    ans = e
     heapq.heappush(open_queue, (f_value(Sx, Sy, e), Sx, Sy))
 
     while (e >= 1):
@@ -110,6 +143,24 @@ def ARA():
 
         updateFValue(e)
 
-    return ans
+class MyThread(Thread):
+    def __init__(self, event):
+        Thread.__init__(self)
+        self.stopped = event
 
-print(ARA())
+    def run(self):
+        while not self.stopped.wait(upper_bound):
+            print(ans)
+            os._exit(0)
+
+(inputDir, outputDir) = readArguments()
+importFromFile(inputDir)
+
+stopFlag = Event()
+thread = MyThread(stopFlag)
+thread.start()
+
+ARA()
+print(ans)
+os._exit(0)
+
