@@ -8,11 +8,12 @@ import time
 
 # region A Star initialization
 n = 1
-Sx = 0
-Sy = 0
-Gx = 0
-Gy = 0
+Sx = -1
+Sy = -1
+Gx = -1
+Gy = -1
 arr = [[]]
+adj = [[]]
 visited = set()
 
 
@@ -26,10 +27,10 @@ def initialize_astar():
     global visited
 
     n = 1
-    Sx = 0
-    Sy = 0
-    Gx = 0
-    Gy = 0
+    Sx = -1
+    Sy = -1
+    Gx = -1
+    Gy = -1
     arr = [[]]
     visited = set()
 # endregion
@@ -64,7 +65,7 @@ right_frame.grid_propagate(0)
 loadinput_button = Button(right_frame, text="Load input ...")
 loadinput_button.grid(column=0, row=0, sticky='snew', pady=10, padx=10)
 
-run_button = Button(right_frame, text="Run", state=DISABLED)
+run_button = Button(right_frame, text="Run from file", state=DISABLED)
 run_button.grid(column=0, row=1, sticky='snew', pady=5, padx=10)
 
 saveoutput_button = Button(
@@ -98,6 +99,9 @@ Radiobutton(right_frame, text="Travelable", background=COLOR_RIGHTPANEL_BACKGROU
 Radiobutton(right_frame, text="Obstacle", background=COLOR_RIGHTPANEL_BACKGROUND, variable=edit_mode_var, value=1).grid(column=0, row=9, sticky='w', pady=5, padx=10)
 Radiobutton(right_frame, text="Start", background=COLOR_RIGHTPANEL_BACKGROUND, variable=edit_mode_var, value=2).grid(column=0, row=10, sticky='w', pady=5, padx=10)
 Radiobutton(right_frame, text="Goal", background=COLOR_RIGHTPANEL_BACKGROUND, variable=edit_mode_var, value=3).grid(column=0, row=11, sticky='w', pady=5, padx=10)
+
+run_gui_button = Button(right_frame, text="Run from GUI")
+run_gui_button.grid(column=0, row=12, sticky='snew', pady=5, padx=10)
 
 # Drawing objects:
 #    Dimensions (ignore initial values)
@@ -248,10 +252,11 @@ def set_cell_state(x, y, state, temporarily):
         replace_once_state("GOAL", "STATE_NORMAL")
 
     if not temporarily:
-        grid_cells_state[(x, y)] = state
+        grid_cells_state[(y, x)] = state
     main_canvas.itemconfig(
         grid_cells[(y, x)], fill=grid_cell_states_color[state])
     main_canvas.update_idletasks()
+    # time.sleep(100)
 
 
 def replace_once_state(old_state, new_state):
@@ -306,15 +311,13 @@ def loadinput_click():
 
 
 def run_click():
-    global Sx
-    global Sy
-    global Gx
-    global Gy
     (ff, path) = aStar(Sx, Sy, Gx, Gy)
-    for (x, y) in reversed(path):
-        set_cell_state(x, y, "STATE_FINAL", None)
     if ff == -1:
         messagebox.showinfo("", "Can't find a path!")
+        return
+    for i in range(len(path) - 2, 0, -1):
+        (x, y) = path[i]
+        set_cell_state(x, y, "STATE_FINAL", None)
 
 
 def reset_states_click():
@@ -332,14 +335,54 @@ def create_grid_click():
         messagebox.showinfo("", "Can't interpret grid size!")
         return
 
+    global n
+    global adj
+    n = size
+    adj = [x[:] for x in [[0] * n] * n]  
     create_grid(size, size)
 
+def run_gui_click():
+    global Sx
+    global Sy
+    global Gx
+    global Gy
+    global arr
+
+    cnt = 0
+    for i in range(n):
+        for j in range(n):
+            if (adj[i][j] == MODE_START):
+                cnt += 1
+                (Sx, Sy) = (i, j)
+    if (cnt != 1):
+        messagebox.showinfo("", "Exactly one start node")
+        return
+
+    cnt = 0
+    for i in range(n):
+        for j in range(n):
+            if (adj[i][j] == MODE_GOAL):
+                cnt += 1
+                (Gx, Gy) = (i, j)
+    if (cnt != 1):
+        messagebox.showinfo("", "Exactly one goal node")
+        return
+
+    arr = [x[:] for x in [[0] * n] * n] 
+    for i in range(n):
+        for j in range(n):
+            if (adj[i][j] == MODE_OBSTACLE):
+                arr[i][j] = 1
+            
+    run_click()
+    
 
 def window_postinit():
     loadinput_button.configure(command=loadinput_click)
     run_button.configure(command=run_click)
     reset_button.configure(command=reset_states_click)
     create_grid_button.configure(command=create_grid_click)
+    run_gui_button.configure(command=run_gui_click)
 
 
 def find_xy_from_id(id):
@@ -392,17 +435,18 @@ def mousemove_handler(event, mousebutton):
 
     main_canvas.itemconfig(hover_box, fill=blended_color)
 
+    (x, y) = (y, x)
     if mousebutton == LEFT:
-        set_cell_state(y,x, mode_state[edit_mode_var.get()], None)
-        arr[x][y] = 1 if edit_mode_var.get() == MODE_OBSTACLE else 0
+        set_cell_state(x, y, mode_state[edit_mode_var.get()], None)
+        adj[x][y] = edit_mode_var.get()
 
     # print(blended_color)
-    # main_canvas.itemconfig(hover_box, fill = )
+    # main_canvas.itemconfig(hover_box, fill = blended_color)
 
-    # Uncomment for small magic
+    # # Uncomment for small magic
 
     # for state, color in grid_cell_states_color.items():
-    #    if color == grid_cell_states_color[grid_cells_state[(y,x)]]:
+    #    if color == grid_cell_states_color[grid_cells_state[(x, y)]]:
     #        create_grid_label.config(text = state)
 
 
@@ -465,7 +509,7 @@ def aStar(Sx, Sy, Gx, Gy):
                 (x, y) = tr[x][y]
             path.append((Sx, Sy))
             path.reverse()
-            return (ff, path)
+            return (ff + 1, path)
 
         if (x, y) not in visited:
             visited.add((x, y))
