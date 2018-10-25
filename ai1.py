@@ -236,10 +236,10 @@ def create_grid(height, width):
 
 def set_cell_state(x, y, state, temporarily):
 
-    #    if ((x, y) == (Sx, Sy) and state != "START") or ((x, y) == (Gx, Gy) and state != "GOAL"):
-    #        return
-    #    if x == -1 or y == -1:
-    #        return
+    if ((x, y) == (Sx, Sy) and state != "START") or ((x, y) == (Gx, Gy) and state != "GOAL"):
+        return
+    if x == -1 or y == -1:
+        return
 
     if state == "START":
         replace_once_state("START", "STATE_NORMAL")
