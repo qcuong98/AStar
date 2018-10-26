@@ -122,14 +122,16 @@ grid_cells = {}
 #    Graphical cells states:
 grid_cell_states_color = {
 #    "OBSTACLE": "#85a9e5",
-    "OBSTACLE": "#5272a8",
-    "START": "#ff6d00",
-    "GOAL": "#00c853",
-    "STATE_NORMAL": "#93bbff",
+#    "OBSTACLE": "#5272a8",
+    "OBSTACLE": COLOR_LEFTCANVAS_BACKGROUND,
+    "START": "#d81b60",
+    "GOAL": "#64dd17",
+#    "STATE_NORMAL": "#93bbff",
+    "STATE_NORMAL": "#bbdefb",
     "STATE_HOVER": "#ffffff",
-    "STATE_PUSH": "#ff0000",
-    "STATE_POP": "#00ff00",
-    "STATE_FINAL": "#00ffff"
+    "STATE_PUSH": "#5e35b1",
+    "STATE_POP": "#9162e4",
+    "STATE_FINAL": "#280680"
 }
 mode_state = {
     MODE_NORMAL: "STATE_NORMAL",
@@ -224,7 +226,8 @@ def create_grid(height, width):
                 grid_padding+(x+1)*grid_cell_size,
                 grid_padding+(y+1)*grid_cell_size,
                 # outline="#85a9e5")
-                outline="#5272a8")
+                #outline="#5272a8")
+                outline=COLOR_LEFTCANVAS_BACKGROUND)
             #grid_cells_state[(x,y)] = "STATE_NORMAL"
 
     for x in range(grid_width_cells):
@@ -255,8 +258,14 @@ def set_cell_state(x, y, state, temporarily):
 
     if not temporarily:
         grid_cells_state[(y, x)] = state
+
     main_canvas.itemconfig(
         grid_cells[(y, x)], fill=grid_cell_states_color[state])
+
+    #if state == "OBSTACLE":
+    #    main_canvas.itemconfig(
+    #        grid_cells[(y, x)], outline=COLOR_LEFTCANVAS_BACKGROUND)
+    
     main_canvas.update_idletasks()
     # time.sleep(100)
 
@@ -286,7 +295,9 @@ def loadinput_click():
     global Sx, Sy
     global Gx, Gy
     global arr
+    global adj
     global n
+
     filename = askopenfilename(title="Select input", filetypes=[
         ("All files", "*.*")])
     if not filename:    # cancel
@@ -302,10 +313,13 @@ def loadinput_click():
 
     run_button.configure(state="normal")
 
+    adj = [x[:] for x in [[0] * n] * n]
+
     for x in range(n):
         for y in range(n):
             if arr[x][y] == 1:
                 set_cell_state(x, y, "OBSTACLE", None)
+                adj[x][y] = arr[x][y]
 
     set_cell_state(Sx, Sy, "START", None)
     set_cell_state(Gx, Gy, "GOAL", None)
