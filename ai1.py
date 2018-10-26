@@ -75,7 +75,7 @@ saveoutput_button.grid(column=0, row=2, sticky='snew', pady=5, padx=10)
 reset_button = Button(right_frame, text="Reset states")
 reset_button.grid(column=0, row=3, sticky='snew', pady=5, padx=10)
 
-create_grid_label = Label(right_frame, text="Grid size (n×n):",
+create_grid_label = Label(right_frame, text="Grid size (n x n):",
                           background=COLOR_RIGHTPANEL_BACKGROUND, foreground=COLOR_RIGHTPANEL_FOREGROUND, justify=LEFT)
 create_grid_label.grid(column=0, row=4, sticky='w', pady=5, padx=10)
 
