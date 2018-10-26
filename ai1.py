@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import messagebox
 from array import *
 from tkinter.filedialog import askopenfilename
+from tkinter.filedialog import asksaveasfilename
 import math
 import heapq
 import time
@@ -15,6 +16,7 @@ Gy = -1
 arr = [[]]
 adj = [[]]
 visited = set()
+last_result = []
 
 
 def initialize_astar():
@@ -279,6 +281,7 @@ def set_cell_text(x, y, cell_text):
                             text=cell_text)
 
 
+
 def loadinput_click():
     global Sx, Sy
     global Gx, Gy
@@ -311,13 +314,16 @@ def loadinput_click():
 
 
 def run_click():
-    (ff, path) = aStar(Sx, Sy, Gx, Gy)
+    global last_result
+    last_result = aStar(Sx, Sy, Gx, Gy)
+    (ff, path) = last_result
     if ff == -1:
         messagebox.showinfo("", "Can't find a path!")
         return
     for i in range(len(path) - 2, 0, -1):
         (x, y) = path[i]
         set_cell_state(x, y, "STATE_FINAL", None)
+    saveoutput_button.config(state=NORMAL)
 
 
 def reset_states_click():
@@ -340,6 +346,7 @@ def create_grid_click():
     n = size
     adj = [x[:] for x in [[0] * n] * n]  
     create_grid(size, size)
+
 
 def run_gui_click():
     global Sx
@@ -375,7 +382,15 @@ def run_gui_click():
                 arr[i][j] = 1
             
     run_click()
-    
+
+
+def export_result_click():
+    filename = asksaveasfilename(title="Save result as", filetypes=[
+        ("All files", "*.*")])
+    if not filename:    # cancel
+        return    
+    exportToFile(last_result, filename)
+
 
 def window_postinit():
     loadinput_button.configure(command=loadinput_click)
@@ -383,6 +398,7 @@ def window_postinit():
     reset_button.configure(command=reset_states_click)
     create_grid_button.configure(command=create_grid_click)
     run_gui_button.configure(command=run_gui_click)
+    saveoutput_button.configure(command=export_result_click)
 
 
 def find_xy_from_id(id):
@@ -459,6 +475,37 @@ def button_click():
 
 # region A Star routines
 
+def exportToFile(res, outputDir):
+    fOutput = open(outputDir, "w")
+    (len_path, path) = res
+
+    if (len_path == -1):
+        fOutput.write("-1")
+        return
+
+    ans = arr[:]
+    for i in range(n):
+        for j in range(n):
+            if (ans[i][j] == 0):
+                ans[i][j] = '-'
+            elif (ans[i][j] == 1):
+                ans[i][j] = 'o'
+    for (x, y) in path:
+        ans[x][y] = 'x'
+    ans[Sx][Sy] = 'S'
+    ans[Gx][Gy] = 'G'
+
+    fOutput.write(str(int(len_path)))
+    fOutput.write("\n")
+    for (x, y) in path:
+        fOutput.write("(" + str(x) + "," + str(y) + ") ")
+    fOutput.write("\n")
+    for i in range(n):
+        for j in range(n):
+            fOutput.write(ans[i][j] + " ")
+        fOutput.write("\n")
+
+    fOutput.close()
 
 def sqr(a):
     return a * a
