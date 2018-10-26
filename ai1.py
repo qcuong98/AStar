@@ -427,18 +427,19 @@ def mousemove_handler(event, mousebutton):
                        hover_box_x, hover_box_y,
                        hover_box_x + grid_cell_size, hover_box_y+grid_cell_size)
 
+    (x, y) = (y, x)
+    if mousebutton == LEFT:
+        set_cell_state(x, y, mode_state[edit_mode_var.get()], None)
+        adj[x][y] = edit_mode_var.get()
+
+    (x,y) = (y,x)
     current_color = hex_to_RGB(
-        grid_cell_states_color[grid_cells_state[(y, x)]])
+        grid_cell_states_color[grid_cells_state[(x, y)]])
     toblend_color = hex_to_RGB(grid_cell_states_color["STATE_HOVER"])
     blended_color = RGB_to_hex(alphablend(
         current_color, toblend_color, 0.5, 0.5))
 
     main_canvas.itemconfig(hover_box, fill=blended_color)
-
-    (x, y) = (y, x)
-    if mousebutton == LEFT:
-        set_cell_state(x, y, mode_state[edit_mode_var.get()], None)
-        adj[x][y] = edit_mode_var.get()
 
     # print(blended_color)
     # main_canvas.itemconfig(hover_box, fill = blended_color)
@@ -538,6 +539,8 @@ window.bind("<Configure>", reconfigure_sizes)
 main_canvas.bind("<Motion>", lambda event: mousemove_handler(event, None))
 main_canvas.bind("<B1-Motion>", lambda event: mousemove_handler(event, LEFT))
 main_canvas.bind("<B3-Motion>", lambda event: mousemove_handler(event, RIGHT))
+main_canvas.bind("<ButtonRelease-1>", lambda event: mousemove_handler(event, LEFT))
+
 
 window.mainloop()
 # endregion
