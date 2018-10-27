@@ -131,7 +131,7 @@ grid_cell_states_color = {
     "STATE_HOVER": "#ffffff",
     "STATE_PUSH": "#5e35b1",
     "STATE_POP": "#9162e4",
-    "STATE_FINAL": "#280680"
+    "STATE_FINAL": "#f44336"
 }
 mode_state = {
     MODE_NORMAL: "STATE_NORMAL",
@@ -205,10 +205,6 @@ def create_grid(height, width):
     global grid_width_cells
     global grid_height_cells
     global hover_box
-    global Sx
-    global Sy
-    global Gx
-    global Gy
 
     for x in range(grid_width_cells):
         for y in range(grid_height_cells):
@@ -234,12 +230,6 @@ def create_grid(height, width):
         for y in range(grid_height_cells):
             set_cell_state(x, y, "STATE_NORMAL", None)
 
-    Sx = 0
-    Sy = 0
-    grid_cells_state[(0, 0)] = "START"
-    Gx = grid_width_cells - 1
-    Gy = grid_height_cells - 1
-    grid_cells_state[(grid_width_cells-1, grid_height_cells-1)] = "GOAL"
     reconfigure_sizes(None)
 
 
