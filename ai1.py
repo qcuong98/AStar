@@ -92,15 +92,16 @@ edit_map_label = Label(right_frame, text="Mode:",
 edit_map_label.grid(column=0, row=7, sticky='w', pady=5, padx=10)
 
 edit_mode_var = IntVar()
+
 MODE_NORMAL = 0
 MODE_OBSTACLE = 1
 MODE_START = 2
 MODE_GOAL = 3
 
-Radiobutton(right_frame, text="Travelable", background=COLOR_RIGHTPANEL_BACKGROUND, variable=edit_mode_var, value=0).grid(column=0, row=8, sticky='w', pady=5, padx=10)
-Radiobutton(right_frame, text="Obstacle", background=COLOR_RIGHTPANEL_BACKGROUND, variable=edit_mode_var, value=1).grid(column=0, row=9, sticky='w', pady=5, padx=10)
-Radiobutton(right_frame, text="Start", background=COLOR_RIGHTPANEL_BACKGROUND, variable=edit_mode_var, value=2).grid(column=0, row=10, sticky='w', pady=5, padx=10)
-Radiobutton(right_frame, text="Goal", background=COLOR_RIGHTPANEL_BACKGROUND, variable=edit_mode_var, value=3).grid(column=0, row=11, sticky='w', pady=5, padx=10)
+Radiobutton(right_frame, text="Start", background=COLOR_RIGHTPANEL_BACKGROUND, variable=edit_mode_var, value=2).grid(column=0, row=8, sticky='w', pady=5, padx=10)
+Radiobutton(right_frame, text="Goal", background=COLOR_RIGHTPANEL_BACKGROUND, variable=edit_mode_var, value=3).grid(column=0, row=9, sticky='w', pady=5, padx=10)
+Radiobutton(right_frame, text="Obstacle", background=COLOR_RIGHTPANEL_BACKGROUND, variable=edit_mode_var, value=1).grid(column=0, row=10, sticky='w', pady=5, padx=10)
+Radiobutton(right_frame, text="Travelable", background=COLOR_RIGHTPANEL_BACKGROUND, variable=edit_mode_var, value=0).grid(column=0, row=11, sticky='w', pady=5, padx=10)
 
 run_gui_button = Button(right_frame, text="Run from GUI")
 run_gui_button.grid(column=0, row=12, sticky='snew', pady=5, padx=10)
@@ -123,7 +124,7 @@ grid_cells = {}
 grid_cell_states_color = {
 #    "OBSTACLE": "#85a9e5",
 #    "OBSTACLE": "#5272a8",
-    "OBSTACLE": COLOR_LEFTCANVAS_BACKGROUND,
+    "OBSTACLE": "#000000",
     "START": "#d81b60",
     "GOAL": "#64dd17",
 #    "STATE_NORMAL": "#93bbff",
@@ -234,10 +235,9 @@ def create_grid(height, width):
 
 
 def set_cell_state(x, y, state, temporarily):
-
-    if ((x, y) == (Sx, Sy) and state != "START") or ((x, y) == (Gx, Gy) and state != "GOAL"):
-        return
     if x == -1 or y == -1:
+        return
+    if ((x, y) == (Sx, Sy) and state != "START") or ((x, y) == (Gx, Gy) and state != "GOAL"):
         return
 
     if state == "START":
@@ -278,8 +278,6 @@ def set_cell_text(x, y, cell_text):
 
     main_canvas.create_text(px, py, fill="darkblue", font="monospace 10",
                             text=cell_text)
-
-
 
 def loadinput_click():
     global Sx, Sy
@@ -332,6 +330,8 @@ def run_click():
 
 def reset_states_click():
     run_button.configure(state=DISABLED)
+    create_grid_button.configure(state=NORMAL)
+    run_gui_button.configure(state=NORMAL)
     initialize_astar()
     create_grid(0, 0)
 
@@ -366,7 +366,9 @@ def run_gui_click():
                 cnt += 1
                 (Sx, Sy) = (i, j)
     if (cnt != 1):
-        messagebox.showinfo("", "Exactly one start node")
+        messagebox.showinfo("", "Exactly one start node. Press RESET STATES button!")
+        run_gui_button.configure(state=DISABLED)
+        create_grid_button.configure(state=DISABLED)
         return
 
     cnt = 0
@@ -376,7 +378,9 @@ def run_gui_click():
                 cnt += 1
                 (Gx, Gy) = (i, j)
     if (cnt != 1):
-        messagebox.showinfo("", "Exactly one goal node")
+        messagebox.showinfo("", "Exactly one goal node. Press RESET STATES button!")
+        run_gui_button.configure(state=DISABLED)
+        create_grid_button.configure(state=DISABLED)
         return
 
     arr = [x[:] for x in [[0] * n] * n] 
