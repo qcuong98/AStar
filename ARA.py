@@ -16,6 +16,7 @@ arr = []
 closed = set()
 open_queue = []
 incons = set()
+orderNeighbors = [(-1, -1), (-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (0, -1)]
 
 def readArguments():
     if (len(sys.argv) != 3):
@@ -48,8 +49,7 @@ tr = {}
 # cells that robot can go from (x, y)
 def listCellsCanGoFrom(x, y):
     ans = []
-    for i in range(-1, 2):
-        for j in range(-1, 2):
+    for (i, j) in orderNeighbors:
             (u, v) = (x + i, y + j)
             if (u in range(n)) and (v in range(n)) and (arr[u][v] != 1):
                 ans.append((u, v))

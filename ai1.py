@@ -17,7 +17,7 @@ arr = [[]]
 adj = [[]]
 visited = set()
 last_result = []
-
+orderNeighbors = [(-1, -1), (-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (0, -1)]
 
 def initialize_astar():
     global n
@@ -525,8 +525,7 @@ def heuristic(x, y):
 
 def listCellsCanGoFrom(x, y):
     ans = []
-    for i in range(-1, 2):
-        for j in range(-1, 2):
+    for (i, j) in orderNeighbors:
             (u, v) = (x + i, y + j)
             if (u in range(n)) and (v in range(n)) and \
                (arr[u][v] != 1) and ((u, v) not in visited):
