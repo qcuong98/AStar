@@ -19,10 +19,10 @@ incons = set()
 orderNeighbors = [(-1, -1), (-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (0, -1)]
 
 def readArguments():
-    if (len(sys.argv) != 3):
-        print("python3 ARA.py <input_file_directory> <output_file_directory>")
+    if (len(sys.argv) != 2):
+        print("python3 ARA.py <input_file_directory>")
         exit()
-    return (sys.argv[1], sys.argv[2])
+    return sys.argv[1]
 
 def importFromFile(inputDir):
     global n
@@ -153,7 +153,7 @@ class MyThread(Thread):
             print(ans)
             os._exit(0)
 
-(inputDir, outputDir) = readArguments()
+inputDir = readArguments()
 importFromFile(inputDir)
 
 stopFlag = Event()
@@ -161,6 +161,7 @@ thread = MyThread(stopFlag)
 thread.start()
 
 ARA()
+stopFlag.set()
 print(ans)
 os._exit(0)
 
