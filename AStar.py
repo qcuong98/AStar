@@ -11,7 +11,7 @@ orderNeighbors = [(-1, -1), (-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (
 
 def readArguments():
     if (len(sys.argv) != 3):
-        print("python3 AStar.py <input_file_directory> <output_file_directory>")
+        print("1612843_1612869_Lab01.exe <input_file_directory> <output_file_directory>")
         exit()
     return (sys.argv[1], sys.argv[2])
 

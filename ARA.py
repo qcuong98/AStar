@@ -20,7 +20,7 @@ orderNeighbors = [(-1, -1), (-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (
 
 def readArguments():
     if (len(sys.argv) != 2):
-        print("python3 ARA.py <input_file_directory>")
+        print("1612843_1612869_Lab01_ARA.exe <input_file_directory>")
         exit()
     return sys.argv[1]
 
